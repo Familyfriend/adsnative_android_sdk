@@ -14,6 +14,8 @@ public class AdRequest {
     private String adUnitID;
     private List<String> keywords;
     private Map<String, String> parameters;
+    private boolean downloadThumbnailBitmap = true;
+    private boolean downloadBrandBitmap = true;
 
     /**
      * Constructor
@@ -116,4 +118,37 @@ public class AdRequest {
     public String removeParameter(String key) {
         return parameters.remove(key);
     }
+    
+    /**
+     * set if the thumbnail bitmap will be downloaded right before the success callback
+     * 
+     * @param download true to let the SDK download the thumbanil bitmap
+     */
+    public void setDownloadThumbnailBitmap( boolean download ) {
+        downloadThumbnailBitmap = download;
+    }
+    
+    /**
+     * @return true if the sdk has to download the thumbnail bitmap
+     */
+    public boolean hasToDownloadThumbnailBitmap() {
+        return downloadThumbnailBitmap;
+    }
+    
+    /**
+     * set if the thumbnail bitmap will be downloaded right before the success callback
+     * 
+     * @param download true to let the SDK download the brand bitmap
+     */
+    public void setDownloadBrandBitmap( boolean download ) {
+        downloadBrandBitmap = download;
+    }
+    
+    /**
+     * @return true if the sdk has to download the brand bitmap
+     */
+    public boolean hasToDownloadBrandBitmap() {
+        return downloadBrandBitmap;
+    }
+    
 }

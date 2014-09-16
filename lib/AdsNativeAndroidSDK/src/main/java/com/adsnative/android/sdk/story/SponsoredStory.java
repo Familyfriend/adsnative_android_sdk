@@ -132,7 +132,9 @@ public class SponsoredStory {
                     GetSponsoredStoryResponse getSponsoredStoryResponse = new GetSponsoredStoryResponse(json);
                     if (getSponsoredStoryResponse.getStatus().equalsIgnoreCase("OK")) {
                         sponsoredStoryData = getSponsoredStoryResponse.parseJson();
-                        sponsoredStoryData.setThumbnailBitmap(BitmapFactory.decodeStream(new URL(sponsoredStoryData.getThumbnailUrl()).openConnection().getInputStream()));
+                        
+                        if( adRequest.hasToDownloadThumbnailBitmap() )
+                            sponsoredStoryData.setThumbnailBitmap(BitmapFactory.decodeStream(new URL(sponsoredStoryData.getThumbnailUrl()).openConnection().getInputStream()));
                     } else if (getSponsoredStoryResponse.getStatus().equalsIgnoreCase("FAIL")) {
                         onSponsoredStoryDataListener.onFailure(getSponsoredStoryResponse.getFailureMessage());
                     }

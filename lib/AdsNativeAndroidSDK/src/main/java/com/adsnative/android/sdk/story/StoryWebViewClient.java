@@ -1,7 +1,10 @@
 package com.adsnative.android.sdk.story;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -47,6 +50,25 @@ public class StoryWebViewClient extends WebViewClient {
         super.onPageFinished(view, url);
         if (progressBar != null)
             progressBar.setVisibility(View.GONE);
+    }
+    
+    
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        try {
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                view.getContext().startActivity(intent);
+                ((Activity) view.getContext()).finish();
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+
+        }
+
+        return false;
     }
 
     /**

@@ -57,7 +57,17 @@ public class SponsoredStoryController {
      * @return fetched {@link com.adsnative.android.sdk.story.SponsoredStory}
      */
     public SponsoredStory fetchSponsoredStory(String adUnitId, List<String> adRequestKeywords) {
-        final SponsoredStory sponsoredStory = new SponsoredStory(new AdRequest(adUnitId, adRequestKeywords), context);
+        return fetchSponsoredStory( new AdRequest(adUnitId, adRequestKeywords) );
+    }
+    
+    /**
+     * Fetches {@link com.adsnative.android.sdk.story.SponsoredStory} with specified AdRequest
+     *
+     * @param AdRequest the {@link com.adsnative.android.sdk.request.AdRequest} used to load the ads
+     * @return fetched {@link com.adsnative.android.sdk.story.SponsoredStory}
+     */
+    public SponsoredStory fetchSponsoredStory( AdRequest adRequest ) {
+        final SponsoredStory sponsoredStory = new SponsoredStory( adRequest, context);
         sponsoredStory.loadRequest();
         sponsoredStory.setOnSponsoredStoryDataListener(new OnSponsoredStoryDataListener() {
             @Override
