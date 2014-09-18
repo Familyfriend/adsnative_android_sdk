@@ -134,21 +134,5 @@ public class AdRequest {
     public boolean hasToDownloadThumbnailBitmap() {
         return downloadThumbnailBitmap;
     }
-    
-    /**
-     * set if the thumbnail bitmap will be downloaded right before the success callback
-     * 
-     * @param download true to let the SDK download the brand bitmap
-     */
-    public void setDownloadBrandBitmap( boolean download ) {
-        downloadBrandBitmap = download;
-    }
-    
-    /**
-     * @return true if the sdk has to download the brand bitmap
-     */
-    public boolean hasToDownloadBrandBitmap() {
-        return downloadBrandBitmap;
-    }
-    
+        
 }
