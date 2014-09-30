@@ -2,7 +2,7 @@ package com.adsnative.android.sdk.device;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.adsnative.android.sdk.Constants;
@@ -35,10 +35,9 @@ public class GetAdvertisingId extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... params) {
-        String id = "";
         if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS) {
             try {
-                id = AdvertisingIdClient.getAdvertisingIdInfo(context).getId();
+                return AdvertisingIdClient.getAdvertisingIdInfo(context).getId();
             } catch (IOException e) {
                 Log.e(Constants.ERROR_TAG, e.getMessage());
                 return null;
@@ -50,9 +49,13 @@ public class GetAdvertisingId extends AsyncTask<Void, Void, String> {
                 return null;
             }
         } else {
-            id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+            if (deviceId != null) {
+                return deviceId;
+            } else {
+                return android.os.Build.SERIAL;
+            }
         }
-        return id;
     }
 }
 
