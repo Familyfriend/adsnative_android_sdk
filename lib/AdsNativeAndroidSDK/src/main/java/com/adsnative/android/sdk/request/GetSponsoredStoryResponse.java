@@ -63,7 +63,7 @@ public class GetSponsoredStoryResponse extends AdResponse {
                     storyData.setPromotedByTag(ad.getString("promotedByTag"));
                     storyData.setPromotedByUrl(checkHttp(ad.getString("promotedByUrl")));
                     HashMap<String, String> customFields = new HashMap<String, String>();
-                    if (ad.getJSONObject("customFields") != null) {
+                    if ( !ad.isNull("customFields") ) {
                         JSONObject object = ad.getJSONObject("customFields");
                         Iterator<String> iterator = object.keys();
                         while (iterator.hasNext()){

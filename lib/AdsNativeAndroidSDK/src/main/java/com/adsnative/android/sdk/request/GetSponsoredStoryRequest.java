@@ -1,13 +1,14 @@
 package com.adsnative.android.sdk.request;
 
+import java.io.UnsupportedEncodingException;
+
+import android.net.Uri;
+import android.net.Uri.Builder;
 import android.util.Log;
 
 import com.adsnative.android.sdk.Constants;
 import com.adsnative.android.sdk.device.DeviceInfo;
 import com.github.kevinsawicki.http.HttpRequest;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Builds url for sponsored story request and makes GET call to API
@@ -32,35 +33,37 @@ public class GetSponsoredStoryRequest {
     }
 
     /**
-     * Gets parameters from properties objects and builds parameters part of url.
+     * Builds complete url for getting sponsored story request
      *
-     * @return parameters part of url
+     * @return complete url for request
      */
-    private String getParams() {
+    private String getUrl() throws UnsupportedEncodingException {
+
+        Uri uri = Uri.parse("http://" + Constants.URL_HOST + "/" + Constants.VERSION + "/ad.json?");
+        Builder uriBuilder = uri.buildUpon();
+        
         String zid = adRequest.getAdUnitID();
         String ua = deviceInfo.getUserAgent();
         String al = deviceInfo.getLocale();
         String tz = deviceInfo.getTimeZone();
         String bd = deviceInfo.getConnectionType();
         String odin1 = deviceInfo.getODIN1();
-
-        String params = "zid=" + zid + "&app=1" + "&ua=" + ua + "&al=" + al + "&tz=" + tz +
-                "&uuid=" + uuid + "&bd=" + bd + "&odin1=" + odin1;
+        
+        uriBuilder.appendQueryParameter("zid", zid);
+        uriBuilder.appendQueryParameter("app", "1");
+        uriBuilder.appendQueryParameter("us", ua);
+        uriBuilder.appendQueryParameter("al", al);
+        uriBuilder.appendQueryParameter("tz", tz);
+        uriBuilder.appendQueryParameter("uuid", uuid);
+        uriBuilder.appendQueryParameter("bd", bd);
+        uriBuilder.appendQueryParameter("odin1", odin1);
 
         if (adRequest.getKeywordsListSize() > 0) {
             for (String s : adRequest.getKeywordsList())
-                params += "&keywords[]=" + s;
+                uriBuilder.appendQueryParameter("keywords[]", s);
         }
-        return params;
-    }
-
-    /**
-     * Builds complete url for getting sponsored story request
-     *
-     * @return complete url for request
-     */
-    private String getUrl() throws UnsupportedEncodingException {
-        return "http://" + Constants.URL_HOST + "/" + Constants.VERSION + "/ad.json?" + URLEncoder.encode(getParams(), "utf-8");
+        
+        return uriBuilder.build().toString();
     }
 
     /**
