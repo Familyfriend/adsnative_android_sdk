@@ -6,6 +6,9 @@ import com.adsnative.android.sdk.Constants;
 import com.adsnative.android.sdk.device.DeviceInfo;
 import com.github.kevinsawicki.http.HttpRequest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Builds url for sponsored story request and makes GET call to API
  */
@@ -56,8 +59,8 @@ public class GetSponsoredStoryRequest {
      *
      * @return complete url for request
      */
-    private String getUrl() {
-        return "http://" + Constants.URL_HOST + "/" + Constants.VERSION + "/ad.json?" + getParams();
+    private String getUrl() throws UnsupportedEncodingException {
+        return "http://" + Constants.URL_HOST + "/" + Constants.VERSION + "/ad.json?" + URLEncoder.encode(getParams(), "utf-8");
     }
 
     /**
@@ -67,9 +70,12 @@ public class GetSponsoredStoryRequest {
      */
     public HttpRequest get() {
         try {
-            return HttpRequest.get(HttpRequest.encode(getUrl()));
+            return HttpRequest.get(getUrl());
         } catch (HttpRequest.HttpRequestException exception) {
             Log.e(Constants.ERROR_TAG, exception.getMessage());
+            return null;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
             return null;
         }
     }

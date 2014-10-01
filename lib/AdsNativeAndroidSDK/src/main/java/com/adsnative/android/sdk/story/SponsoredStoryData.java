@@ -2,6 +2,8 @@ package com.adsnative.android.sdk.story;
 
 import android.graphics.Bitmap;
 
+import java.util.HashMap;
+
 /**
  * Container class for SponsoredStory data fetched from server and parsed from JSON response
  */
@@ -26,6 +28,11 @@ public class SponsoredStoryData {
     private String zoneId;
     private String uuid;
     private Bitmap thumbnailBitmap;
+    private HashMap<String, String> customFields;
+
+    public SponsoredStoryData(){
+        customFields = new HashMap<String, String>();
+    }
 
     public String getTitle() {
         return title;
@@ -169,6 +176,14 @@ public class SponsoredStoryData {
 
     public void setThumbnailBitmap(Bitmap thumbnailBitmap) {
         this.thumbnailBitmap = thumbnailBitmap;
+    }
+
+    public HashMap<String, String> getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(HashMap<String, String> customFields) {
+        this.customFields = customFields;
     }
 }
 

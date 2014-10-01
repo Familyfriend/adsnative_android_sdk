@@ -21,6 +21,9 @@ public class GetSponsoredStoryResponseTest {
             "   \"ad\": {" +
             "       \"backgroundColor\": \"\"," +
             "       \"brandImageUrl\": \"http://dev-www.adsnative.com/media/brand_images/1/82cc86ad-9070-4b90-9006-1fbca6697694.jpg\"," +
+            "       \"customFields\":" + " {" +
+            "           \"test_key1\" : \"test_value1\"," +
+            "           \"test_key2\" : \"test_value2\"," + "}," +
             "       \"embedUrl\": \"http://dev-api.adsnative.com/v1/creative.html?crid=LFGRP9OI&sid=tnqvzhb71xh8da4349n1myyhhkp4k8r3\"," +
             "       \"imageSrc\": \"http://dev-www.adsnative.com/media/1/cfc02947-4103-4f57-ba0d-fda9d8a6c6ff.jpg\"," +
             "       \"promotedBy\": \"RedBull\"," +

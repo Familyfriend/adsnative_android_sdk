@@ -9,6 +9,9 @@ import com.adsnative.android.sdk.story.SponsoredStoryData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
  * Handles and parse response from get operation requested on API
  */
@@ -59,6 +62,17 @@ public class GetSponsoredStoryResponse extends AdResponse {
                     storyData.setPromotedBy(ad.getString("promotedBy"));
                     storyData.setPromotedByTag(ad.getString("promotedByTag"));
                     storyData.setPromotedByUrl(checkHttp(ad.getString("promotedByUrl")));
+                    HashMap<String, String> customFields = new HashMap<String, String>();
+                    if (ad.getJSONObject("customFields") != null) {
+                        JSONObject object = ad.getJSONObject("customFields");
+                        Iterator<String> iterator = object.keys();
+                        while (iterator.hasNext()){
+                            String key = iterator.next();
+                            String value = object.getString(key);
+                            customFields.put(key, value);
+                        }
+                        storyData.setCustomFields(customFields);
+                    }
                 }
 
                 storyData.setCampaignId(data.getString("cid"));
