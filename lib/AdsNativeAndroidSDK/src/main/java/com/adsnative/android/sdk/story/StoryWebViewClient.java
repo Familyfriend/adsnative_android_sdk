@@ -1,7 +1,6 @@
 package com.adsnative.android.sdk.story;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,9 +14,8 @@ import android.widget.ProgressBar;
  */
 
 public class StoryWebViewClient extends WebViewClient {
-
+    
     private ProgressBar progressBar;
-    private Context context;
 
     /**
      * Empty constructor for 1x1 drop pixel WebView.
@@ -56,7 +54,7 @@ public class StoryWebViewClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         try {
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            if ( url.startsWith("https://play.google.com") || ( !url.startsWith("http://") && !url.startsWith("https://") ) ) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 view.getContext().startActivity(intent);
