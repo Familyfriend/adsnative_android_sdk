@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.os.Build;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
