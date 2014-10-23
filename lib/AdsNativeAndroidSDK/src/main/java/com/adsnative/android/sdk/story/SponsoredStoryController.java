@@ -1,5 +1,8 @@
 package com.adsnative.android.sdk.story;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,10 +18,6 @@ import android.widget.TextView;
 
 import com.adsnative.android.sdk.WebViewActivity;
 import com.adsnative.android.sdk.request.AdRequest;
-import com.designfuture.music.util.UIUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controller and renderer of the SponsoredStories attached to ListView
