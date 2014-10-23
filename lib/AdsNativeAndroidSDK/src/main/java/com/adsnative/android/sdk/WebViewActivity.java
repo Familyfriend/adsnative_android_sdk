@@ -45,6 +45,11 @@ public class WebViewActivity extends Activity {
         webView = new WebView(this);
         webView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         webView.getSettings().setJavaScriptEnabled(true);
+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            webView.setLayerType( View.LAYER_TYPE_SOFTWARE, null);
+        }
+
         relativeLayout.addView(webView);
 
         ProgressBar progressBar = new ProgressBar(this);
