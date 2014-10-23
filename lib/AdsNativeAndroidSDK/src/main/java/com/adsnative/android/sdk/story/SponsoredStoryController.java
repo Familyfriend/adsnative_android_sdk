@@ -3,6 +3,7 @@ package com.adsnative.android.sdk.story;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.adsnative.android.sdk.WebViewActivity;
 import com.adsnative.android.sdk.request.AdRequest;
+import com.designfuture.music.util.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,6 +203,11 @@ public class SponsoredStoryController {
         webView.setLayoutParams(new ViewGroup.LayoutParams(1, 1));
         webView.setWebViewClient(new StoryWebViewClient());
         webView.loadData(sponsoredStoryData.getTrackingTags(), "text/html", null);
+        
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            webView.setLayerType( View.LAYER_TYPE_SOFTWARE, null);
+        }
+        
         return webView;
     }
 
