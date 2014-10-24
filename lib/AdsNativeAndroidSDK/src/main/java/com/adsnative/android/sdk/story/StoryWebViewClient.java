@@ -1,5 +1,7 @@
 package com.adsnative.android.sdk.story;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,22 +17,40 @@ import android.widget.ProgressBar;
 
 public class StoryWebViewClient extends WebViewClient {
     
-    private ProgressBar progressBar;
+    /***************************************************
+     * ATTRIBUTES
+     ****************************************************/
+    
+    private ProgressBar mProgressBar;
+    private ArrayList<String> mRedirectPrefixUrls;
 
-    /**
-     * Empty constructor for 1x1 drop pixel WebView.
-     */
-    public StoryWebViewClient() {
-    }
-
+    /***************************************************
+     * CONSTRUCTORS
+     ****************************************************/
+    
     /**
      * Constructor for WebViews displaying content after clicking on Ad
      *
      * @param progressBar to be hided after loading finishes
      */
     public StoryWebViewClient(ProgressBar progressBar) {
-        this.progressBar = progressBar;
+        this( progressBar, null );
     }
+    
+    /**
+     * Constructor for WebViews displaying content after clicking on Ad
+     *
+     * @param progressBar to be hided after loading finishes
+     * @param redirectPrefixUrls if the url loaded by the webView starts with one of these strings will be redirected to the android system trough an intent
+     */
+    public StoryWebViewClient(ProgressBar progressBar, ArrayList<String> redirectPrefixUrls) {
+        mProgressBar = progressBar;
+        mRedirectPrefixUrls = redirectPrefixUrls;
+    }
+    
+    /***************************************************
+     * CALLBACKS
+     ****************************************************/
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -46,15 +66,15 @@ public class StoryWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        if (progressBar != null)
-            progressBar.setVisibility(View.GONE);
+        if (mProgressBar != null)
+            mProgressBar.setVisibility(View.GONE);
     }
     
     
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         try {
-            if ( url.startsWith("https://play.google.com") || ( !url.startsWith("http://") && !url.startsWith("https://") ) ) {
+            if ( redirect( url ) ) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 view.getContext().startActivity(intent);
@@ -81,5 +101,20 @@ public class StoryWebViewClient extends WebViewClient {
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
         view.stopLoading();
+    }
+    
+    /***************************************************
+     * CLASS METHOD
+     ****************************************************/
+    
+    private boolean redirect( String url ) {
+        boolean redirect = url.startsWith("https://play.google.com");
+        redirect |= ( !url.startsWith("http://") && !url.startsWith("https://") );
+        
+        if( mRedirectPrefixUrls != null && !mRedirectPrefixUrls.isEmpty() )
+            for( String prefix : mRedirectPrefixUrls )
+                redirect |= url.startsWith(prefix);
+        
+        return redirect;
     }
 }

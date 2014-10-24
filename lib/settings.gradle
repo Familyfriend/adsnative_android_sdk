@@ -1,1 +1,1 @@
-include ':test', ':AdsNativeAndroidSDK'
+include 'AdsNativeAndroidSDK'

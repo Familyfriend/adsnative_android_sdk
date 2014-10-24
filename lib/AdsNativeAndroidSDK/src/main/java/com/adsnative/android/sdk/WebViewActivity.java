@@ -1,12 +1,16 @@
 package com.adsnative.android.sdk;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.os.Build;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
@@ -14,32 +18,80 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.adsnative.android.sdk.request.LogTimeRequest;
+import com.adsnative.android.sdk.story.SponsoredStoryData;
 import com.adsnative.android.sdk.story.StoryWebViewClient;
-
-import java.util.Calendar;
 
 /**
  * Activity for displaying WebView and log time after clicking the ad.
  */
-
 public class WebViewActivity extends Activity {
+    
+    /***************************************************
+     * STATIC ATTRIBUTE
+     ****************************************************/
+    
+    private final static String EXTRA_CREATIVE_ID = "crid";
+    private final static String EXTRA_SESSION_ID = "sid";
+    private final static String EXTRA_URL = "url";
+    private final static String EXTRA_REDIRECT_PREFIX_URL_LIST = WebViewActivity.class.getName() + "EXTRA_REDIRECT_PREFIX_URL_LIST";
+    
+    /***************************************************
+     * STATIC METHODS
+     ****************************************************/
 
+    public static void open( Context context, SponsoredStoryData data ) {
+        open(context, data, null);
+    }
+    
+    public static void open(Context context, SponsoredStoryData data, ArrayList<String> redirectUrls) {
+        if (context == null || data == null)
+            return;
+
+        Intent intent = new Intent(context, WebViewActivity.class);
+        intent.putExtra(EXTRA_CREATIVE_ID, data.getCreativeId());
+        intent.putExtra(EXTRA_SESSION_ID, data.getSessionId());
+        intent.putExtra(EXTRA_URL, data.getUrl());
+
+        if (redirectUrls != null && !redirectUrls.isEmpty()) {
+            intent.putExtra(EXTRA_REDIRECT_PREFIX_URL_LIST, redirectUrls);
+        }
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+    
+    /***************************************************
+     * ATTRIBUTES
+     ****************************************************/
+    
+    //VIEW
     private WebView webView;
-    private String creativeId;
-    private String sessionId;
-    private String url;
-    private long startTime;
-    private long endTime;
+    
+    //DATA
+    private String mCreativeId;
+    private String mSessionId;
+    private String mUrl;
+    private ArrayList<String> mRedirectUrls;
+    
+    //TIME
+    private long mStartTime;
+    private long mEndTime;
 
+    /***************************************************
+     * LIFECYCLE
+     ****************************************************/
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         Intent intent = getIntent();
-        creativeId = intent.getStringExtra("crid");
-        sessionId = intent.getStringExtra("sid");
-        url = intent.getStringExtra("url");
+        mCreativeId = intent.getStringExtra( EXTRA_CREATIVE_ID );
+        mSessionId = intent.getStringExtra( EXTRA_SESSION_ID );
+        mUrl = intent.getStringExtra( EXTRA_URL );
+        mRedirectUrls = intent.getStringArrayListExtra( EXTRA_REDIRECT_PREFIX_URL_LIST );
+        
         RelativeLayout relativeLayout = new RelativeLayout(this);
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -62,8 +114,8 @@ public class WebViewActivity extends Activity {
 
         setContentView(relativeLayout, layoutParams);
 
-        webView.setWebViewClient(new StoryWebViewClient(progressBar));
-        webView.loadUrl(url);
+        webView.setWebViewClient(new StoryWebViewClient(progressBar, mRedirectUrls));
+        webView.loadUrl(mUrl);
     }
 
     /**
@@ -72,7 +124,7 @@ public class WebViewActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        startTime = Calendar.getInstance().getTimeInMillis();
+        mStartTime = Calendar.getInstance().getTimeInMillis();
     }
 
     /**
@@ -82,9 +134,13 @@ public class WebViewActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        endTime = Calendar.getInstance().getTimeInMillis();
-        new LogTime(creativeId, sessionId).execute(endTime - startTime);
+        mEndTime = Calendar.getInstance().getTimeInMillis();
+        new LogTime(mCreativeId, mSessionId).execute(mEndTime - mStartTime);
     }
+    
+    /***************************************************
+     * INNER CLASSES
+     ****************************************************/
 
     /**
      * Background task for logging time to server. execute @param is amount of time to be logged

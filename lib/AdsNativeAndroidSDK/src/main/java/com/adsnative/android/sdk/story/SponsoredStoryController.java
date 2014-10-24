@@ -165,12 +165,7 @@ public class SponsoredStoryController {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, WebViewActivity.class);
-                intent.putExtra("crid", sponsoredStory.getSponsoredStoryData().getCreativeId());
-                intent.putExtra("sid", sponsoredStory.getSponsoredStoryData().getSessionId());
-                intent.putExtra("url", sponsoredStory.getSponsoredStoryData().getUrl());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                WebViewActivity.open(context, sponsoredStory.getSponsoredStoryData() );
             }
         });
 
@@ -200,7 +195,7 @@ public class SponsoredStoryController {
     private View getImpressionPixel(SponsoredStoryData sponsoredStoryData) {
         WebView webView = new WebView(context);
         webView.setLayoutParams(new ViewGroup.LayoutParams(1, 1));
-        webView.setWebViewClient(new StoryWebViewClient());
+        webView.setWebViewClient(new TrackingPixelWebViewClient());
         webView.loadData(sponsoredStoryData.getTrackingTags(), "text/html", null);
         
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
