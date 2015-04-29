@@ -3,6 +3,7 @@ package com.adsnative.android.sdk.story;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.adsnative.android.sdk.Constants;
@@ -104,7 +105,7 @@ public class SponsoredStory {
      * if SponsoredStory is completely fetched and data is correctly parsed. If SponsoredStoryData is null
      * nth is going to be triggered.
      */
-    private class GetSponsoredStoryTask extends AsyncTask<String, Void, SponsoredStoryData> {
+    private class GetSponsoredStoryTask extends AsyncTask<String, Void, Object> {
 
         private AdRequest adRequest;
         private DeviceInfo deviceInfo;
@@ -115,7 +116,7 @@ public class SponsoredStory {
         }
 
         @Override
-        protected SponsoredStoryData doInBackground(String... params) {
+        protected Object doInBackground(String... params) {
             GetSponsoredStoryRequest getSponsoredStoryRequest =
                     new GetSponsoredStoryRequest(adRequest, uuid, deviceInfo);
             String json = null;
@@ -123,7 +124,7 @@ public class SponsoredStory {
                 json = getSponsoredStoryRequest.get().body();
             } catch (HttpRequest.HttpRequestException e) {
                 Log.e(Constants.ERROR_TAG, e.getMessage());
-                onSponsoredStoryDataListener.onFailure(new FailureMessage("Internet connection problem"));
+                return new FailureMessage(e.getMessage());
             }
 
             if (json != null) {
@@ -136,29 +137,38 @@ public class SponsoredStory {
                         if( adRequest.hasToDownloadThumbnailBitmap() )
                             sponsoredStoryData.setThumbnailBitmap(BitmapFactory.decodeStream(new URL(sponsoredStoryData.getThumbnailUrl()).openConnection().getInputStream()));
                     } else if (getSponsoredStoryResponse.getStatus().equalsIgnoreCase("FAIL")) {
-                        onSponsoredStoryDataListener.onFailure(getSponsoredStoryResponse.getFailureMessage());
+                        return getSponsoredStoryResponse.getFailureMessage();
                     }
                 } catch (JSONException e) {
-                    Log.e(Constants.ERROR_TAG, e.getMessage());
-                    return null;
+                    String message = TextUtils.isEmpty(e.getMessage()) ? "" : e.getMessage();
+                    Log.e(Constants.ERROR_TAG, message);
+                    return new FailureMessage(e.getMessage());
                 } catch (MalformedURLException e) {
-                    Log.e(Constants.ERROR_TAG, e.getMessage());
-                    return null;
+                    String message = TextUtils.isEmpty(e.getMessage()) ? "" : e.getMessage();
+                    Log.e(Constants.ERROR_TAG, message);;
+                    return new FailureMessage(e.getMessage());
                 } catch (IOException e) {
-                    Log.e(Constants.ERROR_TAG, e.getMessage());
-                    return null;
+                    String message = TextUtils.isEmpty(e.getMessage()) ? "" : e.getMessage();
+                    Log.e(Constants.ERROR_TAG, message);
+                    return new FailureMessage(e.getMessage());
+                } catch (Exception e) {
+                    String message = TextUtils.isEmpty(e.getMessage()) ? "" : e.getMessage();
+                    Log.e(Constants.ERROR_TAG, message);
+                    return new FailureMessage(e.getMessage());
                 }
                 return sponsoredStoryData;
             }
-            return null;
+            return new FailureMessage("Something went wrong");
         }
 
         @Override
-        protected void onPostExecute(SponsoredStoryData sponsoredStoryData) {
-            super.onPostExecute(sponsoredStoryData);
-            if (sponsoredStoryData != null) {
-                setSponsoredStoryData(sponsoredStoryData);
+        protected void onPostExecute(Object result) {
+            super.onPostExecute(result);
+            if ( result != null && result instanceof SponsoredStoryData ) {
+                setSponsoredStoryData((SponsoredStoryData) result);
                 onSponsoredStoryDataListener.onSponsoredStoryData();
+            } else if( result instanceof FailureMessage ) {
+                onSponsoredStoryDataListener.onFailure((FailureMessage) result);
             }
         }
     }
